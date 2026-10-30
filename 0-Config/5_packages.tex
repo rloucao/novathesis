@@ -100,6 +100,13 @@
 %%  ADD YOUR PACKAGES AND OTHER CUSTOMIZATIONS HERE
 %%============================================================
 
+% Workaround (novathesis 8.5.0): \@ntcitetemplate ignores \ntsetup{cite/template=false}
+% and always adds the novathesis manual to the bibliography. Make it honour the option.
+\makeatletter
+\AtBeginDocument{\renewcommand*{\@ntcitetemplate}{\iftoggle{/novathesis/cite/template}{\nocite{novathesis-manual:2026:jlourenco}}{}}}
+\makeatother
+
+
 % Optional "chemical" glossary example (paired with 1-FrontMatter/chemical.bib
 % and the commented \ntaddfile{glossaries}[symbols]{chemical} line in
 % 0-Config/4_files.tex). A NEW type beyond the 3 built-in ones
