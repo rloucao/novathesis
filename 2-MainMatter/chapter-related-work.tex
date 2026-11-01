@@ -7,7 +7,7 @@
 
 \chapter{Related Work}
 \label{chap:related-work}
-Searching across federated scientific repositories touches on several bodies of work that have developed largely in isolation. Structured overlays gave us efficient and fully decentralised lookup, but only for keys that are known exactly. The information retrieval community solved resource selection and result merging for collections that will not surrender their data, but assumed a coordinator and cooperative participants. Work on semantic peer-to-peer search attacked the exact-match limitation from two different angles, while the security community catalogued what happens to any of these systems once some participants stop playing by the rules. Each line answers part of the question this dissertation asks; none answers it entirely.
+Searching across federated scientific repositories touches on several bodies of work that have developed largely in isolation. Structured overlays gave us efficient and fully decentralised lookup, but only for keys that are exactly known. The information retrieval (\textit{IR}) community solved resource selection and result merging for collections that will not surrender their data, but assumed a coordinator and cooperative participants. Work on semantic peer-to-peer search attacked the exact-match limitation from two different angles, while the security community catalogued what happens to any of these systems once some participants stop playing by the rules. Each line answers part of the question this dissertation asks – none answers it entirely.
 
 \section{Structured Overlays and Distributed Hash Tables}
 \label{sec:rw:dht}
@@ -17,9 +17,13 @@ The issue resolved by \textit{Structured Overlays} (SO) and \textit{Distributed 
 \section{Semantic Search in Peer-to-Peer Systems}
 \label{sec:rw:semantic-p2p}
 % Content- and semantics-based search approaches in P2P networks.
-There have been several papers proposed to fix this issue, and precisely for that matter we are going to shift our focus towards \textit{Semantic Overlay Networks} \cite{crespo2005sons} (SONs) and \textit{SemanticPeer} \cite{zaarour2022semanticpeer} (SP). Before we diving into them, let's go over some definitions:
-Semantics – study of meanings (Merriam-webster)
-Locality
+There have been several papers proposed to fix this issue, and precisely for that matter we are going to shift our focus towards \textit{Semantic Overlay Networks} \cite{crespo2005sons} (SONs), \textit{SemanticPeer} \cite{zaarour2022semanticpeer} (SP) and \textit{OpenPubSub} \cite{zaarour2022openpubsub}. Before we diving into them, let's go over some definitions:
+
+\begin{itemize}
+    \item  Semantics: Study of meanings (Merriam-webster)
+    \item Locality: 
+\end{itemize}
+
 
 \subsection{SONs}
 \label{sec:SONs}
@@ -47,14 +51,29 @@ OpenPubSub is an extentasion of SP into the world of P2P Publish-Subscribe syste
 
 Before we proceed, we must answer the question: What is gossip routing? In a very simple way, it just means that a node (that doesn't contain a view of the entire system) broadcast a message to (some or) all of the nodes it knows, and all of the others do the same, until the expected condition is met. 
 
-OpenPubSub uses gossip with two layers: random peer sampling, based on Cyclon \cite{voulgaris2005cyclon}, and peer selection on top of it, based on Vicinity \cite{voulgaris2013vicinity}: Random peer sampling (random exchange of partials views); Peer selection (choosing the neighbours based on similar subscriptions); An event arriving to the rendezvous is then sent to the neighbours of that node, that most likely have similar subscriptions.
+OpenPubSub uses gossip with two layers: random peer sampling, based on Cyclon \cite{voulgaris2005cyclon}, and peer selection on top of it, based on Vicinity \cite{voulgaris2013vicinity}. An event arriving to the rendezvous is then sent to the neighbours of that node, that most likely have similar subscriptions.
 
 With the hybrid routing, the upper bound for approximate event matching recall is 56.7\%; rendezvous routing alone reaches up to 54\% while cutting messaging overhead by 44\%, whereas the hybrid approach reaches 43.8\% with a 59\% reduction. The hybrid trades recall for overhead rather than improving both.
 
-Although OpenPubSub improves on SemanticPeer, it still leaves three aspects unattended, and all of them matter for federated scientific repositories. First, everyone is assumed to be cooperative – there is no threat model, and nothing stops a node from advertising a position in the semantic space that has nothing to do with what it actually holds. Second, it is publish/subscribe, meaning standing subscriptions waiting for events to flow by. Searching a federation is the other way around, ad-hoc queries against data that is already sitting there, which needs persistent indexes, ranking and result merging instead of event dissemination. Third, and this applies to everything we have seen so far, every peer is treated as interchangeable – there is no notion of who owns what, who is allowed to publish it, or who answers for it.
+Although OpenPubSub improves on SemanticPeer, it still leaves three aspects unattended, and all of them matter for federated scientific repositories. First, everyone is assumed to be cooperative – there is no threat model, and nothing stops a node from advertising a position in the semantic space that has nothing to do with what it actually holds. Second, it is publish/subscribe, meaning standing subscriptions waiting for events to flow by. Searching a federation is the other way around, ad-hoc queries against data that is already sitting there, which needs persistent indexes, ranking and result merging instead of event dissemination. And third, and this applies to everything we have seen so far, every peer is treated as interchangeable – there is no notion of who owns what, who is allowed to publish it, or who answers for it.
 
 \section{Federated Search and Resource Selection}
 \label{sec:rw:federated}
+The systems discussed so far all answer the same question: "Where does the content live?". SON's paper narrows it down to category. While SP's paper narrows it down to a region of the vector space, and a DHT pins it to a single responsible node. In every case, the decision is structural – based on where a node lives, not on what it is estimated to hold. Two problems are left unanswered. The first, given fifty candidate sources, which ones are actually worth answering? And, how much is each likely to return (a valid result or not)? Second, once several independent sources have answered, each ranking its own documents against its own statistics, how do we turn that into a single list? These questions are not new. The IR community had been working on them long before P2P search existed, under the names of \textit{federated search and distributed information retrieval}, and it is to that literature that we now turn: Lu \& Callan \cite{lu2003hybrid} and MINERVA \cite{bender2005minerva}.
+
+Before diving in to it, a warning on vocabulary. The systems in this section use \textit{query routing} as "deciding which peers recieve what queries", not the hop-by-hop of Section \ref{sec:rw:dht}. We keep the IR sense of the term throughout.
+
+\subsection{Lu \& Callan}
+\label{sec:rw:LuCallan}
+Lu \& Callan suggest a Hybrid Peer-to-Peer network. And by "hybrid" they mean: having two types of nodes, \textit{directory nodes} and \textit{leaf nodes}, each with diferent responsabilities and covering most of the regions of the network while cooperating with eachother. 
+
+Leaf nodes are responsible to hold colection of documents – each node represents a digital library. They send to their directory node a summary of what they have, more precisely they send a hash table with terms to the names of the documents they store, and \textit{resource description} with the terms and their frequencies. Moreover, these are also responsible to start query routing. Directory nodes don't hold any content, they are only responsible to effectively route queries, deciding which (directory or) leaf nodes get to answer the query, \textit{resource selection}. It's important to note that the resources never leave the leaf nodes, its them who process the query on their own index and return results. When a query hits a leaf node it runs an recovery algorithm with K-L divergence to order documents in its collection and generates a query hit message with the information about the 50 best classified documents that satisty the correspondence – the query is compared with the content of the documents not with their name: \textit{Content-based retrieval}.
+
+The results of having this approach are in respect with the bandwidth usage without losing recall and scalling the precision rate. It is also important to note that the directory nodes act as super-peers (mention something – article), without having any semantics references
+
+
+\subsection{MINERVA}
+\label{sec:rw:minerva}
 Lu \& Callan e MINERVA, que já leste. Enquadra com a decomposição clássica do IR: descrever recursos, selecionar quais consultar, fundir resultados. O contraste entre os dois é o que dá vida à secção — mesma função, com e sem directory nodes. Skim do Callan e do survey Shokouhi \& Si só para citares a origem. Fecho: assumem cooperação e trabalham sobre estatísticas de termos, não semântica.
 
 \section{Decentralized Indexing}
@@ -63,13 +82,26 @@ Li et al. é o centro: o custo proibitivo do índice invertido distribuído, e a
 
 \section{Adversarial Resilience}
 \label{sec:rw:adversarial}
-Survey Urdaneta/Pierre/van Steen primeiro, para o mapa. Depois Douceur (Sybil), Singh et al. (eclipse, degree bounding), Liang et al. (index poisoning). O Brahms já tens. Fecho: tudo isto pressupõe redes abertas sem identidade.
+Survey Urdaneta/Pierre/van Steen <- Lê essa cena bro (para o mapa)
+Douceur <- Lê essa cena bro (Sybil)
+Singh <- Lê essa cena bro (eclipse attacks e degree bounding)
+Liang et al <- Lê essa cena bro (index poisoning)
+
+Fecha com
+Bramhs <- Lê essa cena bro (byzantine proof views)
+
 
 \section{Open Science Infrastructure}
 \label{sec:rw:open-science}
-EOSC, OpenAIRE, Zenodo, OAI-PMH. Já leste os FAIR (Wilkinson, Mons, Martone, Sharma) em setembro. Fecho: federações reais, mas descoberta centralizada num agregador.
+EOSC <- Lê essa cena bro
+OpenAIRE <- Lê essa cena bro
+Zenodo <- Lê essa cena bro
+OAI-PMH <- Lê essa cena bro
+FAIR <- Lê essa cena bro 
+
+Fecha com
+fedarções reais, mas descoberta centralizada num agregador
 
 
-
-
-Acabar capitulo de Related Work com "ninguém combina semântica + estrutura institucional + resiliência"
+After going through all of these articles, one thing stands out: No one combine semantics with institutional structure and fault tolarence.
+%Acabar capitulo de Related Work com "ninguém combina semântica + estrutura institucional + resiliência"
