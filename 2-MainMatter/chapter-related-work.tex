@@ -12,16 +12,17 @@ Searching across federated scientific repositories touches on several bodies of 
 \section{Structured Overlays and Distributed Hash Tables}
 \label{sec:rw:dht}
 % Structured overlay networks and DHTs, and their limits for search.
-The issue resolved by \textit{Structured Overlays} (SO) and \textit{Distributed Hash Tables} (DHT) is the exact lookup in O(log N) \cite{stoica2001chord,rowstron2001pastry,maymounkov2002kademlia}. However, it leaves in the open another, greater, and more challeging issue, \textit{Approximate Search}, based on text words. The idea of this is simple "Search, in an overlay, based on what the user types" \cite{crespo2005sons}
+The issue resolved by \textit{Structured Overlays} (SO) and \textit{Distributed Hash Tables} (DHT) is the exact lookup in O(log N) \cite{stoica2001chord,rowstron2001pastry,maymounkov2002kademlia}. However, it leaves in the open another, greater, and more challeging issue, \textit{Approximate Search}, based on text words. The idea of this is simple "Search, in an overlay, based on what the user types" \cite{crespo2005sons}.
 
 \section{Semantic Search in Peer-to-Peer Systems}
 \label{sec:rw:semantic-p2p}
 % Content- and semantics-based search approaches in P2P networks.
-There have been several papers proposed to fix this issue, and precisely for that matter we are going to shift our focus towards \textit{Semantic Overlay Networks} (SONs – \cite{crespo2005sons}) and \textit{SemanticPeer} (SP – \cite{zaarour2022semanticpeer}). Before we diving into them, let's go over some definitions:
+There have been several papers proposed to fix this issue, and precisely for that matter we are going to shift our focus towards \textit{Semantic Overlay Networks} \cite{crespo2005sons} (SONs) and \textit{SemanticPeer} \cite{zaarour2022semanticpeer} (SP). Before we diving into them, let's go over some definitions:
 Semantics – study of meanings (Merriam-webster)
 Locality
 
 \subsection{SONs}
+\label{sec:SONs}
 Semantic Overlay Networks are sophisticated structured overlays based on semantics – each node maintains connections with other nodes influenced by their content, nodes having many "Jazz" files will connect to other similar nodes. SONs are, optionally, hierarchically structured, so a \textit{father SON} with category "Music" mantains a unidirectional connection to \textit{children SONs} containing any genre of music, and so on. By having this structure, queries, that enter the system, are classified and only routed to the SON in respect to it's semantics, thus preventing the wastefullness of flooding \cite{crespo2005sons}. It's also important to note, that nodes are not fixed to just one SON, a node can be part of multiple SONs based on the content it holds. To join a SON, a node must contain a significant percentage of the content related to the SON's category – \textit{Layered SONs} — with fallback for higher levels of the hierachy when there are insufficient results.
 
 In the original paper, the authors acknowledged the limitation of their algorithm to be regarding \textit{Completeness} – there are no guarantees that the search of a document will 100\% retrive it, due to missclassification of documents (which has a probability of 25\% of happening, and 4\% of missclassification of nodes), forcing the system to adopt a flooding technique between all the nodes in the overlay, to be 100\% sure that the document is retrieved. Furthermore, it contains another crucial limitation, \textit{Granularity}. The authors state that the level of granularity has to be carefully decided, as too little granularity will not generate enough locality (one node belongs to all SONs), while too much would increase maintenance costs (and one SON would contain every node).
@@ -29,6 +30,7 @@ In the original paper, the authors acknowledged the limitation of their algorith
 SONs show that organising nodes by content pays off, but the approach rests on a classification that everyone must agree on and that is defined upfront. Nothing in the design accounts for taxonomies that evolve, for content that legitimately belongs to several categories at once, or for nodes that might lie about the category they claim to hold.
 
 \subsection{SP}
+\label{sec:SP}
 SemanticPeer tackles the problem at its root – the exact lookup. Instead of enhancing the structure of the nodes, it suggests a novel distributed lookup protocol, they propose an approximate matching model where participants agree on a distributed model of word meaning that maps terms to a vector space. The terms are mapped to word embeddings and the space is particioned per agglomerative hierarchical clustering with cosine distance – resulting in a \textit{Dendogram}.
 
 Each node is responsible for his own branch of the dendrogram and its identifier is the mean vector of all the vectors it stores. Upon entering the system, a node receives half the branch of another, and both exchange routing references – routing table with entries of pair <<mean vector, IP address>>. It is important to note, that the father of the branch is not aware of the split that just happened, thus his routing table has maximum size of O(log N).
@@ -40,6 +42,7 @@ To design such a neat algorithm it is impossible to cover everything. The author
 SemanticPeer removes the need for a shared taxonomy, but trades it for a different set of assumptions: a network with no churn and no failures, and participants that honestly advertise where they sit in the semantic space. Neither holds once the system leaves the lab.
 
 \subsubsection{OpenPubSub}
+\label{sec:OpenPubSub}
 OpenPubSub is an extentasion of SP into the world of P2P Publish-Subscribe systems, tackling the core issues of it. With SP mapping terms into nodes, the approximate lookup can generate \textit{Stray Topics} – nodes far from where semantically related content lives, so they never meet the subscriptions that should match them. OpenPubSub solves this issue by adopting a hybrid routing algorithm: rendezvous routing (similar to how SP routes); and introducing gossip routing between nodes that have similar subscriptions.
 
 Before we proceed, we must answer the question: What is gossip routing? In a very simple way, it just means that a node (that doesn't contain a view of the entire system) broadcast a message to (some or) all of the nodes it knows, and all of the others do the same, until the expected condition is met. 
@@ -52,16 +55,21 @@ Although OpenPubSub improves on SemanticPeer, it still leaves three aspects unat
 
 \section{Federated Search and Resource Selection}
 \label{sec:rw:federated}
-% Federated search architectures and how sources are selected per query.
+Lu \& Callan e MINERVA, que já leste. Enquadra com a decomposição clássica do IR: descrever recursos, selecionar quais consultar, fundir resultados. O contraste entre os dois é o que dá vida à secção — mesma função, com e sem directory nodes. Skim do Callan e do survey Shokouhi \& Si só para citares a origem. Fecho: assumem cooperação e trabalham sobre estatísticas de termos, não semântica.
 
 \section{Decentralized Indexing}
 \label{sec:rw:indexing}
-% Approaches for building and maintaining indexes without a central authority.
+Li et al. é o centro: o custo proibitivo do índice invertido distribuído, e as otimizações que propõem. Kademlia entra aqui se não o meteste já no 2.1. Menção breve a estruturas que preservam ordem (P-Grid, Mercury, BATON) para range queries, sem desenvolver. Cuidado com sobreposição com o 2.3 — decide se o MINERVA vive numa ou noutra, não nas duas.
 
 \section{Adversarial Resilience}
 \label{sec:rw:adversarial}
-% Attacks on decentralized search (e.g., Sybil, eclipse, poisoning) and defences.
+Survey Urdaneta/Pierre/van Steen primeiro, para o mapa. Depois Douceur (Sybil), Singh et al. (eclipse, degree bounding), Liang et al. (index poisoning). O Brahms já tens. Fecho: tudo isto pressupõe redes abertas sem identidade.
 
 \section{Open Science Infrastructure}
 \label{sec:rw:open-science}
-% Existing open science repositories and infrastructures and how they support discovery.
+EOSC, OpenAIRE, Zenodo, OAI-PMH. Já leste os FAIR (Wilkinson, Mons, Martone, Sharma) em setembro. Fecho: federações reais, mas descoberta centralizada num agregador.
+
+
+
+
+Acabar capitulo de Related Work com "ninguém combina semântica + estrutura institucional + resiliência"
