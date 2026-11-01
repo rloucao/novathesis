@@ -7,22 +7,22 @@
 
 \chapter{Related Work}
 \label{chap:related-work}
-deiubduie oebdoiebde \todo[inline]{Must have something Here}, maybe consider having an explanation "Overlay vs Network"
+Searching across federated scientific repositories touches on several bodies of work that have developed largely in isolation. Structured overlays gave us efficient and fully decentralised lookup, but only for keys that are known exactly. The information retrieval community solved resource selection and result merging for collections that will not surrender their data, but assumed a coordinator and cooperative participants. Work on semantic peer-to-peer search attacked the exact-match limitation from two different angles, while the security community catalogued what happens to any of these systems once some participants stop playing by the rules. Each line answers part of the question this dissertation asks; none answers it entirely.
 
 \section{Structured Overlays and Distributed Hash Tables}
 \label{sec:rw:dht}
 % Structured overlay networks and DHTs, and their limits for search.
-The issue resolved by \textit{Structured Overlays} (SO) and \textit{Distributed Hash Tables} (DHT) is the exact lookup in O(log N). (Mention article). However, it leaves in the open another, greater, and more challeging issue, \textit{Approximate Search}, based on text words. The idea of this is simple "Search, in an overlay, based on what the user types" (reference article)
+The issue resolved by \textit{Structured Overlays} (SO) and \textit{Distributed Hash Tables} (DHT) is the exact lookup in O(log N) \cite{stoica2001chord,rowstron2001pastry,maymounkov2002kademlia}. However, it leaves in the open another, greater, and more challeging issue, \textit{Approximate Search}, based on text words. The idea of this is simple "Search, in an overlay, based on what the user types" \cite{crespo2005sons}
 
 \section{Semantic Search in Peer-to-Peer Systems}
 \label{sec:rw:semantic-p2p}
 % Content- and semantics-based search approaches in P2P networks.
-There have been several papers proposed to fix this issue, and precisely for that matter we are going to shift our focus towards \textit{Semantic Overlay Networks} (SONs – \todo[inline]{reference article}) and \textit{SemanticPeer} (SP – \todo[inline]{reference article}). Before we diving into them, let's go over some definitions:
+There have been several papers proposed to fix this issue, and precisely for that matter we are going to shift our focus towards \textit{Semantic Overlay Networks} (SONs – \cite{crespo2005sons}) and \textit{SemanticPeer} (SP – \cite{zaarour2022semanticpeer}). Before we diving into them, let's go over some definitions:
 Semantics – study of meanings (Merriam-webster)
 Locality
 
 \subsection{SONs}
-Semantic Overlay Networks are sophisticated structured overlays based on semantics – each node maintains connections with other nodes influenced by their content, nodes having many "Jazz" files will connect to other similar nodes. SONs are, optionally, hierarchically structured, so a \textit{father SON} with category "Music" mantains a unidirectional connection to \textit{children SONs} containing any genre of music, and so on. By having this structure, queries, that enter the system, are classified and only routed to the SON in respect to it's semantics, thus preventing the wastefullness of flooding (maybe mention article – idk). It's also important to note, that nodes are not fixed to just one SON, a node can be part of multiple SONs based on the content it holds. To join a SON, a node must contain a significant percentage of the content related to the SON's category – \textit{Layered SONs} — with fallback for higher levels of the hierachy when there are insufficient results.
+Semantic Overlay Networks are sophisticated structured overlays based on semantics – each node maintains connections with other nodes influenced by their content, nodes having many "Jazz" files will connect to other similar nodes. SONs are, optionally, hierarchically structured, so a \textit{father SON} with category "Music" mantains a unidirectional connection to \textit{children SONs} containing any genre of music, and so on. By having this structure, queries, that enter the system, are classified and only routed to the SON in respect to it's semantics, thus preventing the wastefullness of flooding \cite{crespo2005sons}. It's also important to note, that nodes are not fixed to just one SON, a node can be part of multiple SONs based on the content it holds. To join a SON, a node must contain a significant percentage of the content related to the SON's category – \textit{Layered SONs} — with fallback for higher levels of the hierachy when there are insufficient results.
 
 In the original paper, the authors acknowledged the limitation of their algorithm to be regarding \textit{Completeness} – there are no guarantees that the search of a document will 100\% retrive it, due to missclassification of documents (which has a probability of 25\% of happening, and 4\% of missclassification of nodes), forcing the system to adopt a flooding technique between all the nodes in the overlay, to be 100\% sure that the document is retrieved. Furthermore, it contains another crucial limitation, \textit{Granularity}. The authors state that the level of granularity has to be carefully decided, as too little granularity will not generate enough locality (one node belongs to all SONs), while too much would increase maintenance costs (and one SON would contain every node).
 
@@ -44,7 +44,7 @@ OpenPubSub is an extentasion of SP into the world of P2P Publish-Subscribe syste
 
 Before we proceed, we must answer the question: What is gossip routing? In a very simple way, it just means that a node (that doesn't contain a view of the entire system) broadcast a message to (some or) all of the nodes it knows, and all of the others do the same, until the expected condition is met. 
 
-OpenPubSub uses gossip with two layers, based on Cyclon (reference article) and on Vicinity on top of Cyclon (reference article): Random peer sampling (random exchange of partials views); Peer selection (choosing the neighbours based on similar subscriptions); An event arriving to the rendezvous is then sent to the neighbours of that node, that most likely have similar subscriptions.
+OpenPubSub uses gossip with two layers: random peer sampling, based on Cyclon \cite{voulgaris2005cyclon}, and peer selection on top of it, based on Vicinity \cite{voulgaris2013vicinity}: Random peer sampling (random exchange of partials views); Peer selection (choosing the neighbours based on similar subscriptions); An event arriving to the rendezvous is then sent to the neighbours of that node, that most likely have similar subscriptions.
 
 With the hybrid routing, the upper bound for approximate event matching recall is 56.7\%; rendezvous routing alone reaches up to 54\% while cutting messaging overhead by 44\%, whereas the hybrid approach reaches 43.8\% with a 59\% reduction. The hybrid trades recall for overhead rather than improving both.
 
