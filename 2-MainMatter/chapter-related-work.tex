@@ -76,8 +76,14 @@ The results of having this approach are in respect with the bandwidth usage with
 
 \subsection{MINERVA}
 \label{sec:rw:minerva}
+\todo{Enhance the grammar}
+On the other hand, in Minerva, the authors proposed a novel P2P Web search engine built on top of \texttt{DHT-based} overlay network. Even though, we've already explored the downside of DHT-based in regards to the main question this dissertation is trying to answer, it is important to cover this crucial paper to highlight limatations of it.
 
-Lu \& Callan e MINERVA, que já leste. Enquadra com a decomposição clássica do IR: descrever recursos, selecionar quais consultar, fundir resultados. O contraste entre os dois é o que dá vida à secção — mesma função, com e sem directory nodes. Skim do Callan e do survey Shokouhi \& Si só para citares a origem. Fecho: assumem cooperação e trabalham sobre estatísticas de termos, não semântica.
+Minerva uses Chord-Style DHT \cite{stoica2001chord} to partition the term space, such that every peer is responsible for the meta-information of a randomized subset of terms within the global directory.
+\todo[inline]{And why does it suck?}
+
+
+%Lu \& Callan e MINERVA, que já leste. Enquadra com a decomposição clássica do IR: descrever recursos, selecionar quais consultar, fundir resultados. O contraste entre os dois é o que dá vida à secção — mesma função, com e sem directory nodes. Skim do Callan e do survey Shokouhi \& Si só para citares a origem. Fecho: assumem cooperação e trabalham sobre estatísticas de termos, não semântica.
 
 \section{Decentralized Indexing}
 \label{sec:rw:indexing}
