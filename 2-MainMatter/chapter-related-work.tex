@@ -67,13 +67,16 @@ Before diving in to it, a warning on vocabulary. The systems in this section use
 \label{sec:rw:LuCallan}
 Lu \& Callan suggest a Hybrid Peer-to-Peer network. And by "hybrid" they mean: having two types of nodes, \textit{directory nodes} and \textit{leaf nodes}, each with diferent responsabilities and covering most of the regions of the network while cooperating with eachother. 
 
-Leaf nodes are responsible to hold colection of documents – each node represents a digital library. They send to their directory node a summary of what they have, more precisely they send a hash table with terms to the names of the documents they store, and \textit{resource description} with the terms and their frequencies. Moreover, these are also responsible to start query routing. Directory nodes don't hold any content, they are only responsible to effectively route queries, deciding which (directory or) leaf nodes get to answer the query, \textit{resource selection}. It's important to note that the resources never leave the leaf nodes, its them who process the query on their own index and return results. When a query hits a leaf node it runs an recovery algorithm with K-L divergence to order documents in its collection and generates a query hit message with the information about the 50 best classified documents that satisty the correspondence – the query is compared with the content of the documents not with their name: \textit{Content-based retrieval}.
+Directory nodes provide regional directory services construct and use the content models of neighboring nodes to determine how to route queries through the network.
 
-The results of having this approach are in respect with the bandwidth usage without losing recall and scalling the precision rate. It is also important to note that the directory nodes act as super-peers (mention something – article), without having any semantics references
+Leaf nodes use \textit{Content-based Retrieval} to devide which documents to retrieve for what queries. It's important to note, the resources never leave the leaf nodes, its them who process the query on their own index and return results. When a query hits a leaf node it runs a recovery algorithm with K-L divergence to order documents in its collection and generates a query hit message with the information about the 50 best classified documents that satisty the correspondence – the query is compared with the content of the documents not with their name.
+
+The results of having this approach are in respect with the bandwidth usage without losing recall and scalling the precision rate. Directory nodes act as super-peers \cite{lu2003hybrid}, with no references regarding semantics.
 
 
 \subsection{MINERVA}
 \label{sec:rw:minerva}
+
 Lu \& Callan e MINERVA, que já leste. Enquadra com a decomposição clássica do IR: descrever recursos, selecionar quais consultar, fundir resultados. O contraste entre os dois é o que dá vida à secção — mesma função, com e sem directory nodes. Skim do Callan e do survey Shokouhi \& Si só para citares a origem. Fecho: assumem cooperação e trabalham sobre estatísticas de termos, não semântica.
 
 \section{Decentralized Indexing}
